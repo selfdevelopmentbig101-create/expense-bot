@@ -1,0 +1,25 @@
+# Start:   docker compose up -d --build
+# Logs:    docker compose logs -f bot
+# Stop:    docker compose down          (your data stays in the bot-data volume)
+services:
+  bot:
+    build: .
+    image: expense-bot
+    container_name: expense-bot
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      # Inside the container the database always lives in the volume.
+      DATABASE_URL: sqlite+aiosqlite:////app/data/bot.db
+    volumes:
+      - bot-data:/app/data
+    stop_grace_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  bot-data:
